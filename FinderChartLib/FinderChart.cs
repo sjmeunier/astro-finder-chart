@@ -173,16 +173,33 @@ namespace FinderChartLib
 			int ras = (int)Math.Floor(((this._centre.RightAscension * 12 / (float)Math.PI - rah) * 60 - ram) * 60 + 0.5;
 			
 			if (ras == 60) {
-				ras += 1;
+				ram += 1;
 				ras = 0;
 			}
 			if (ram== 60) {
-				ram += 1;
+				rah += 1;
 				ram = 0;
 			}
-			if (ra == 24) {
-				ra = 0;
+			if (rah == 24) {
+				rah = 0;
 			}
+			
+			string decSign = "+";
+			if (this._centre.Declination < 0)
+				decSign = "-";
+			
+			int decd = (int)Math.Floor(Math.Abs(this._centre.Declination) * 180 / (float)Math.PI);
+			int decm = (int)Math.Floor((Math.Abs(this._centre.Declination) * 180 / (float)Math.PI - decd) * 60);
+			int decs = (int)Math.Floor(((Math.Abs(this._centre.Declination) * 180 / (float)Math.PI - decd) * 60 - decm) * 60 + 0.5;
+			
+			if (decs == 60) {
+				decm += 1;
+				decs = 0;
+			}
+			if (decm== 60) {
+				decd += 1;
+				decm = 0;
+			}			
 			
 		}
 
