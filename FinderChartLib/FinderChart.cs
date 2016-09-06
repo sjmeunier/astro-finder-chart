@@ -86,9 +86,12 @@ namespace FinderChartLib
 			g.FillRectangle(this._backgroundBrush, 0, 0, this._imageWidth, this._imageWidth);
 
 			DrawStars(g);
-			g.DrawEllipse(this._foregroundPen, this._centreX - this._radiusPixels, this._centreY - this._radiusPixels, this._centreX + this._radiusPixels, this._centreY + this._radiusPixels);
-
+			DrawFrame(g);
+			DrawCoordinates(g);
 			DrawMagnitudeScale(g);
+			DrawTitle(g);
+			DrawLegend(g);
+			
 			return finderChart;
 		}
 		
@@ -97,6 +100,21 @@ namespace FinderChartLib
 			return 1.0f * (float)(Math.Pow(1.27f, (Math.Floor(this._limitingMagnitude) - magnitude)));
 		}
 
+		private void DrawTitle(Graphics g)
+		{
+			
+		}
+		
+		private void DrawLegend(Graphics g)
+		{
+			
+		}
+		
+		private void DrawFrame(Graphics g)
+		{
+			g.DrawEllipse(this._foregroundPen, this._centreX - this._radiusPixels, this._centreY - this._radiusPixels, this._centreX + this._radiusPixels, this._centreY + this._radiusPixels);
+		}
+		
 		private void DrawStar(Graphics g, float x, float y, float magnitude)
 		{
 			float radius = MagnitudeToRadius(magnitude);
@@ -118,6 +136,54 @@ namespace FinderChartLib
 					}
 				}
 			}
+		}
+		
+		private void DrawCoordinates(Graphics g)
+		{
+			/*
+
+        decsign = '+'
+        if dec < 0.0:
+            decsign = '-'
+            pass
+        decd= int(abs(dec)*180/pi)
+        decm = int((abs(dec)*180/pi-decd)*60)
+        decs = int( ((abs(dec)*180/pi-decd)*60 -decm)*60+0.5)
+
+        if decs == 60:
+            decm += 1
+            decs = 0
+            pass
+        if decm == 60:
+            decd+=1
+            decm = 0
+            pass
+
+        self.graphics.text_right(x, y, str(rah).rjust(2),begin=True, end=False)
+        self.graphics.text_superscript(self.language['h'])
+        self.graphics.text(str(ram))
+        self.graphics.text_superscript(self.language['m'])
+        self.graphics.text(str(ras))
+        self.graphics.text_superscript(self.language['s'])
+        dectext = ' '+decsign+str(decd)+'\312'+str(decm)+'\251'+str(decs)+'\042'
+        self.graphics.text(dectext,begin=False, end=True)
+			*/
+			int rah = (int)Math.Floor(this._centre.RightAscension * 12 / (float)Math.PI);
+			int ram = (int)Math.Floor((this._centre.RightAscension * 12 / (float)Math.PI - rah) * 60);
+			int ras = (int)Math.Floor(((this._centre.RightAscension * 12 / (float)Math.PI - rah) * 60 - ram) * 60 + 0.5;
+			
+			if (ras == 60) {
+				ras += 1;
+				ras = 0;
+			}
+			if (ram== 60) {
+				ram += 1;
+				ram = 0;
+			}
+			if (ra == 24) {
+				ra = 0;
+			}
+			
 		}
 
 		private void DrawMagnitudeScale(Graphics g)
