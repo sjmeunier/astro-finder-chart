@@ -44,7 +44,6 @@
     <Compile Include="AstroCalculations.cs" />
     <Compile Include="LM.cs" />
     <Compile Include="RADec.cs" />
-    <Compile Include="DMS.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="FinderChart.cs" />
     <Compile Include="MathExt.cs" />
