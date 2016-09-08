@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -106,10 +107,10 @@ namespace FinderChartLib
             this._scalePen = new Pen(this._foregroundBrush, 3 * this._scale);
             this._outlinePen = new Pen(this._outlineBrush, 0.6f * this._scale);
 
-			this._legendFont = new Font(FontFamily.GenericSerif, 16 * this._scale);
-			this._titleFont = new Font(FontFamily.GenericSerif, 20 * this._scale);
-			this._magnitudeFont = new Font(FontFamily.GenericSerif, 14 * this._scale);
-			this._labelFont = new Font(FontFamily.GenericSansSerif, 12 * this._scale, FontStyle.Bold);
+			this._legendFont = new Font("fonts/Crimson-Roman.ttf", 16 * this._scale);
+			this._titleFont = new Font("fonts/Crimson-Bold.ttf", 20 * this._scale);
+			this._magnitudeFont = new Font("fonts/Crimson-Roman.ttf", 14 * this._scale);
+			this._labelFont = new Font("fonts/Crimson-Roman.ttf", 12 * this._scale, FontStyle.Bold);
 
 		}
 
@@ -120,8 +121,12 @@ namespace FinderChartLib
 			Bitmap finderChart = new Bitmap(this._imageWidth, this._imageWidth);
 			Graphics g = Graphics.FromImage(finderChart);
 
-			g.SmoothingMode = SmoothingMode.AntiAlias;
-			g.FillRectangle(this._backgroundBrush, 0, 0, this._imageWidth, this._imageWidth);
+            g.InterpolationMode = InterpolationMode.High;
+            g.SmoothingMode = SmoothingMode.HighQuality;
+            g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            g.CompositingQuality = CompositingQuality.HighQuality;
+
+            g.FillRectangle(this._backgroundBrush, 0, 0, this._imageWidth, this._imageWidth);
 
 
 			SetClipToChart(g);
