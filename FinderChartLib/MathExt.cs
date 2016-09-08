@@ -17,5 +17,10 @@ namespace FinderChartLib
 		{
 			return deg * (float)Math.PI / 180f;
 		}
+
+		public static float Round(float num, float precision)
+		{
+			return (float)Math.Round(num * precision) / precision;
+		}
 	}
 }

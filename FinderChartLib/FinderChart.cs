@@ -24,6 +24,7 @@ namespace FinderChartLib
 		private float _radiusScale;
 
 		private bool _limitDeepSkyMag;
+		private bool _showLabels;
 
 		private Color _backgroundColor = Color.White;
         private Color _foregroundColor = Color.Black;
@@ -49,31 +50,39 @@ namespace FinderChartLib
 		private Font _titleFont;
 		private Font _magnitudeFont;
 		private Font _labelFont;
+
+		private List<Label> _labels;
+		private List<StarObject> _starsToDraw;
+
 		public StarCatalog StarCatalog;
 		public DeepSkyCatalog DeepSkyCatalog;
-		public List<Label> _labels;
-
+		public StarLabels StarLabels;
+	
 		public FinderChart()
 		{
 			this.StarCatalog = new StarCatalog();
 			this.DeepSkyCatalog = new DeepSkyCatalog();
+			this.StarLabels = new StarLabels();
+
 			this._labels = new List<Label>();
+			this._starsToDraw = new List<StarObject>();
 
             this._backgroundBrush = new SolidBrush(this._backgroundColor);
             this._foregroundBrush = new SolidBrush(this._foregroundColor);
 			this._outlineBrush = new SolidBrush(this._outlineColor);
 
-			SetFieldView(1000, 12, MathExt.Deg2Rad(4), MathExt.Deg2Rad(0.7122222222f * 15f), MathExt.Deg2Rad(41.26889f), "Test", true);
+			SetFieldView(1000, 12, MathExt.Deg2Rad(4), MathExt.Deg2Rad(0.7122222222f * 15f), MathExt.Deg2Rad(41.26889f), "Test", true, true);
 		}
 		
-		public void SetFieldView(int imageWidth, float limitingMagnitude, float radiusRadians, float raRadians, float declinationRadians, string title, bool limitDeepSkyMag)
+		public void SetFieldView(int imageWidth, float limitingMagnitude, float radiusRadians, float raRadians, float declinationRadians, string title, bool limitDeepSkyMag, bool showLabels)
 		{
 			this._imageWidth = imageWidth;
 			this._limitingMagnitude = limitingMagnitude;
 			this._centre = new RADec(raRadians, declinationRadians);
 			this._title = title;
 			this._limitDeepSkyMag = limitDeepSkyMag;
-			
+			this._showLabels = showLabels;
+
 			this._centreX = this._imageWidth / 2;
 			this._centreY = this._imageWidth / 2;
 			
@@ -112,24 +121,42 @@ namespace FinderChartLib
 			Graphics g = Graphics.FromImage(finderChart);
 
 			g.SmoothingMode = SmoothingMode.AntiAlias;
-
 			g.FillRectangle(this._backgroundBrush, 0, 0, this._imageWidth, this._imageWidth);
 
+
+			SetClipToChart(g);
 			DrawStars(g);
 			DrawDeepSky(g);
+			DrawLabels(g);
+			DrawStarLabels(g);
+
+			ClearClip(g);
 			DrawFrame(g);
 			DrawCoordinates(g);
 			DrawMagnitudeScale(g);
             DrawScale(g);
 			DrawTitle(g);
 			DrawLegend(g);
-			DrawLabels(g);
 			DrawLegend(g);
 
 			return finderChart;
 		}
-		
-        private void DrawScale(Graphics g)
+
+		private void ClearClip(Graphics g)
+		{
+			RectangleF r = new RectangleF(0, 0, this._imageWidth, this._imageWidth);
+			g.Clip = new Region(r);
+		}
+
+		private void SetClipToChart(Graphics g)
+		{
+			RectangleF r = new RectangleF(this._centreX - this._radiusPixels, this._centreY - this._radiusPixels, this._radiusPixels * 2, this._radiusPixels * 2);
+			GraphicsPath path = new GraphicsPath();
+			path.AddEllipse(r);
+			g.Clip = new Region(path);
+		}
+
+		private void DrawScale(Graphics g)
         {
             float yOffset = 50 * this._scale;
             float xOffset = this._margin / 2f;
@@ -220,23 +247,55 @@ namespace FinderChartLib
 
 		private void DrawStars(Graphics g)
 		{
-			for(int i = 0; i < this.StarCatalog.Stars.Length; i++)
+			this._starsToDraw = new List<StarObject>();
+
+			for (int i = 0; i < this.StarCatalog.Stars.Length; i++)
 			{
 				if (this.StarCatalog.Stars[i].Magnitude <= this._limitingMagnitude) {
 					float angularDistance = AstroCalculations.AngularDistance(this._centre, this.StarCatalog.Stars[i].Coordinates);
 					if (angularDistance < this._radiusRadians)
 					{
-						LM lm = AstroCalculations.RADecToLM(this._centre, this.StarCatalog.Stars[i].Coordinates);
+						this._starsToDraw.Add(this.StarCatalog.Stars[i]);					
+					}
+				}
+			}
+			foreach(StarObject star in this._starsToDraw.OrderBy(x => x.Magnitude))
+			{
+				LM lm = AstroCalculations.RADecToLM(this._centre, star.Coordinates);
+				float x = lm.L * -1 * this._radiusScale + this._centreX;
+				float y = lm.M * -1 * this._radiusScale + this._centreY;
+				DrawStar(g, x, y, star.Magnitude);
+			}
+		}
+
+		private void DrawStarLabels(Graphics g)
+		{
+			if (!this._showLabels)
+				return;
+
+			foreach(StarLabel star in this.StarLabels.Stars)
+			{
+				if (star.Magnitude <= this._limitingMagnitude)
+				{
+					float angularDistance = AstroCalculations.AngularDistance(this._centre, star.Coordinates);
+					if (angularDistance < this._radiusRadians)
+					{
+						LM lm = AstroCalculations.RADecToLM(this._centre, star.Coordinates);
 						float x = lm.L * -1 * this._radiusScale + this._centreX;
 						float y = lm.M * -1 * this._radiusScale + this._centreY;
-						DrawStar(g, x, y, this.StarCatalog.Stars[i].Magnitude);
+
+						float offset = MagnitudeToRadius(star.Magnitude);
+						g.DrawString(star.Name, this._labelFont, this._foregroundBrush, x + offset + 3f * this._scale, y - 6f * this._scale);
 					}
 				}
 			}
 		}
-		
+
 		private void DrawLabels(Graphics g)
 		{
+			if (!this._showLabels)
+				return;
+
 			foreach(Label label in this._labels)
 			{
 				if (label.Angle != 0)
@@ -392,6 +451,10 @@ namespace FinderChartLib
 								break;
 							case Enums.DeepSkyObjectType.SNR:
 								DrawSupernovaRemnant(g, x, y, deepSkyObject.LongDimension / 2f, name);
+								break;
+							case Enums.DeepSkyObjectType.AlreadyInNGCorIC:
+							case Enums.DeepSkyObjectType.ICAlreadyInNGC:
+								//Do nothing since it is a duplicate
 								break;
 							default:
 								DrawUnknown(g, x, y, deepSkyObject.LongDimension / 2f, name);

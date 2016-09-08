@@ -13,28 +13,31 @@ namespace FinderChartLib
 		private string _icFilename = "data/catalogs/revic.txt";
 		private string _saguaroFilename = "data/catalogs/sac.txt";
 
+		private HashSet<string> _uniqueNames = new HashSet<string>();
 		public List<DeepSkyObject> DeepSkyObjects = new List<DeepSkyObject>();
-
+		
 		public DeepSkyCatalog()
 		{
 			LoadDeepSky();
 		}
 
-		public void ProcessFile(string catalog, string filename)
+		public void ProcessFile(string fileCatalog, string filename)
 		{
 			float rightAscension;
 			float declination;
 			float magnitude;
 			string name;
-			string allNames;
 			string componentNumber;
 			Enums.DeepSkyObjectType type;
 			string constellation;
+			string catalog;
 			float longDimension;
 			float shortDimension;
 			float positionAngle;
 			int messierNumber;
 			string id1;
+			string id2;
+			string id3;
 
 			using (TextReader reader = File.OpenText(filename))
 			{
@@ -43,13 +46,23 @@ namespace FinderChartLib
 				reader.ReadLine();
 				while ((line = reader.ReadLine()) != null)
 				{
+					catalog = fileCatalog;
 					if (line.Substring(11, 1) != " ")
 					{
-						type = (Enums.DeepSkyObjectType)Int32.Parse(line.Substring(11, 1));
-						if (type == Enums.DeepSkyObjectType.DiffuseNebula && line.Substring(78, 3) == "SNR")
-							type = Enums.DeepSkyObjectType.SNR;
 						name = line.Substring(0, 5).Trim();
-						allNames = name;
+
+						if (this._uniqueNames.Contains(catalog + name))
+						{
+							type = Enums.DeepSkyObjectType.AlreadyInNGCorIC;
+						}
+						else
+						{
+							type = (Enums.DeepSkyObjectType)Int32.Parse(line.Substring(11, 1));
+							if (type == Enums.DeepSkyObjectType.DiffuseNebula && line.Substring(78, 3) == "SNR")
+								type = Enums.DeepSkyObjectType.SNR;
+						}
+						this._uniqueNames.Add(catalog + name);
+
 						if (line.Substring(5, 1) != " ")
 							componentNumber = line.Substring(5, 1);
 						else
@@ -92,22 +105,42 @@ namespace FinderChartLib
 							positionAngle = float.Parse(line.Substring(74, 3)) * (float)Math.PI / 180.0f;
 						}
 
+						List<string> allNames = new List<string>();
+						List<string> allNamesSearch = new List<string>();
+						allNames.Add(catalog + " " + name);
+						allNamesSearch.Add(catalog + name);
+
 						messierNumber = 0;
 						id1 = line.Substring(96, 14).Trim();
 						if (id1 != "")
 						{
+							string manipulatedName = id1.Replace(" ", "").ToUpper();
+
+							allNamesSearch.Add(manipulatedName);
+							allNames.Add(id1);
+							this._uniqueNames.Add(manipulatedName);
 							if (id1.Substring(0, 2) == "M ")
 							{
 								messierNumber = int.Parse(id1.Substring(1));
 								catalog = "M";
 								name = messierNumber.ToString();
 							}
-							else
-							{
-
-							}
 						}
-						this.DeepSkyObjects.Add(new DeepSkyObject(rightAscension, declination, magnitude, catalog, name, allNames, componentNumber, type, constellation, longDimension, shortDimension, positionAngle, messierNumber));
+						id2 = line.Substring(112, 14).Trim();
+						if (id2 != "")
+						{
+							string manipulatedName = id2.Replace(" ", "").ToUpper();
+							allNamesSearch.Add(manipulatedName);
+							allNames.Add(id2);
+						}
+						id3 = line.Substring(128, 14).Trim();
+						if (id3 != "")
+						{
+							string manipulatedName = id3.Replace(" ", "").ToUpper();
+							allNamesSearch.Add(manipulatedName);
+							allNames.Add(id3);
+						}
+						this.DeepSkyObjects.Add(new DeepSkyObject(rightAscension, declination, magnitude, catalog, name, allNames, allNamesSearch, componentNumber, type, constellation, longDimension, shortDimension, positionAngle, messierNumber));
 					}
 				}
 			}

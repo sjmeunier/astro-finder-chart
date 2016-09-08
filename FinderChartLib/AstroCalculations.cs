@@ -15,6 +15,7 @@ namespace FinderChartLib
 			float a = Math.Abs(pos1.RightAscension - pos2.RightAscension);
 			float B = Math.Abs(0.5f * (float)Math.PI - pos1.Declination);
 			float C = Math.Abs(0.5f * (float)Math.PI - pos2.Declination);
+
 			float arg = (float)Math.Cos(B) * (float)Math.Cos(C) + (float)Math.Sin(B) * (float)Math.Sin(C) * (float)Math.Cos(a);
 
 			if (arg > 1.0f)

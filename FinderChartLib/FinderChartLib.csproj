@@ -51,6 +51,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DeepSkyObject.cs" />
     <Compile Include="DeepSkyCatalog.cs" />
+    <Compile Include="StarLabels.cs" />
+    <Compile Include="StarLabel.cs" />
     <Compile Include="StarObject.cs" />
     <Compile Include="StarCatalog.cs" />
   </ItemGroup>
