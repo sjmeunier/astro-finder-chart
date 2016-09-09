@@ -34,6 +34,7 @@ namespace FinderChartLib
 		private Brush _backgroundBrush;
 		private Brush _foregroundBrush;
 		private Brush _outlineBrush;
+
 		private Pen _framePen;
 		private Pen _galaxyPen;
 		private Pen _globularClusterPen;
@@ -51,6 +52,8 @@ namespace FinderChartLib
 		private Font _titleFont;
 		private Font _magnitudeFont;
 		private Font _labelFont;
+
+        private FontFamily _labelFontFamily;
 
 		private List<Label> _labels;
 		private List<StarObject> _starsToDraw;
@@ -107,10 +110,16 @@ namespace FinderChartLib
             this._scalePen = new Pen(this._foregroundBrush, 3 * this._scale);
             this._outlinePen = new Pen(this._outlineBrush, 0.6f * this._scale);
 
-			this._legendFont = new Font("fonts/Crimson-Roman.ttf", 16 * this._scale);
-			this._titleFont = new Font("fonts/Crimson-Bold.ttf", 20 * this._scale);
-			this._magnitudeFont = new Font("fonts/Crimson-Roman.ttf", 14 * this._scale);
-			this._labelFont = new Font("fonts/Crimson-Roman.ttf", 12 * this._scale, FontStyle.Bold);
+            PrivateFontCollection fontCollection = new PrivateFontCollection();
+            fontCollection.AddFontFile("data/fonts/Crimson-Roman.ttf");
+            fontCollection.AddFontFile("data/fonts/Crimson-Bold.ttf");
+
+            this._labelFontFamily = fontCollection.Families[0];
+
+            this._legendFont = new Font(fontCollection.Families[0], 16 * this._scale);
+			this._titleFont = new Font(fontCollection.Families[0], 20 * this._scale);
+			this._magnitudeFont = new Font(fontCollection.Families[0], 14 * this._scale);
+			this._labelFont = new Font(fontCollection.Families[0], 12 * this._scale, FontStyle.Bold);
 
 		}
 
@@ -295,6 +304,7 @@ namespace FinderChartLib
 				}
 			}
 		}
+
 
 		private void DrawLabels(Graphics g)
 		{
