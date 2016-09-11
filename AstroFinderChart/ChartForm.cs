@@ -43,7 +43,7 @@ namespace AstroFinderChart
 			if (decD < 0)
 				decl *= -1;
 
-			this._finderChart.SetFieldView(8400, limitingMagnitude, MathExt.Deg2Rad(radius), MathExt.Deg2Rad(ra), MathExt.Deg2Rad(decl), title, chkLimitDeepsky.Checked, chkShowLabels.Checked);
+			this._finderChart.SetFieldView(8400, limitingMagnitude, MathExt.Deg2Rad(radius), MathExt.Deg2Rad(ra), MathExt.Deg2Rad(decl), title, chkLimitDeepsky.Checked, chkShowLabels.Checked, cboInvertColors.Checked, cboInvertNS.Checked, cboInvertEW.Checked);
 
 			if (this._chartBitmap != null)
 			{
@@ -145,7 +145,46 @@ namespace AstroFinderChart
 			}
 			info.AppendLine(string.Format("{0,-12}{1}", "Magnitude:", deepSkyObject.Magnitude));
 			info.AppendLine(string.Format("{0,-12}{1}", "Const:", deepSkyObject.Constellation));
-			info.AppendLine(string.Format("{0,-12}{1}", "Type:", deepSkyObject.Type.ToString()));
+
+			string typeStr = "";
+			switch (deepSkyObject.Type)
+			{
+				case Enums.DeepSkyObjectType.DiffuseNebula:
+					typeStr = "Diffuse nebula";
+					break;
+				case Enums.DeepSkyObjectType.Galaxy:
+					typeStr = "Galaxy";
+					break;
+				case Enums.DeepSkyObjectType.GalaxyCluster:
+					typeStr = "Galaxy cluster";
+					break;
+				case Enums.DeepSkyObjectType.GlobularCluster:
+					typeStr = "Globular cluster";
+					break;
+				case Enums.DeepSkyObjectType.OpenCluster:
+					typeStr = "Open cluster";
+					break;
+				case Enums.DeepSkyObjectType.PartOfGalaxy:
+					typeStr = "Part of galaxy";
+					break;
+				case Enums.DeepSkyObjectType.PlanetaryNebula:
+					typeStr = "Planetary nebula";
+					break;
+				case Enums.DeepSkyObjectType.Quasar:
+					typeStr = "Quasar";
+					break;
+				case Enums.DeepSkyObjectType.SNR:
+					typeStr = "Supernova remnant";
+					break;
+				case Enums.DeepSkyObjectType.Stars:
+					typeStr = "Asterism";
+					break;
+				default:
+					typeStr = "Unknown";
+					break;
+			}
+			info.AppendLine(string.Format("{0,-12}{1}", "Type:", typeStr));
+
 			if (deepSkyObject.LongDimension != deepSkyObject.ShortDimension)
 			{
 				info.AppendLine(string.Format("{0,-12}{1}'", "Length:", MathExt.Round(MathExt.Rad2Deg(deepSkyObject.LongDimension) * 60f, 2)));
@@ -188,7 +227,7 @@ namespace AstroFinderChart
 			{
 				if (deepSkyObject.AllNamesSearch.Contains(searchTerm))
 				{
-					SetSearchResult(deepSkyObject.Coordinates.RightAscension, deepSkyObject.Coordinates.Declination, deepSkyObject.Catalog + deepSkyObject.Name);
+					SetSearchResult(deepSkyObject.Coordinates.RightAscension, deepSkyObject.Coordinates.Declination, deepSkyObject.Name);
 					SetDeepSkyInfo(deepSkyObject);
 					found = true;
 					break;
