@@ -154,17 +154,11 @@ namespace FinderChartLib
 			float magnitude;
 			string name;
 			
-			string componentNumber;
 			Enums.DeepSkyObjectType type;
 			string constellation;
-			string catalog;
 			float longDimension;
 			float shortDimension;
 			float positionAngle;
-			int messierNumber;
-			string id1;
-			string id2;
-			string id3;
 
 			RegexOptions options = RegexOptions.None;
 			Regex regexSpaces = new Regex("[ ]{2,}", options);
@@ -199,6 +193,7 @@ namespace FinderChartLib
 
 					bool found = false;
 					foreach (DeepSkyObject deepSkyObject in this.DeepSkyObjects) {
+
 						foreach (string searchName in allNamesSearch)
 						{
 							if (deepSkyObject.AllNamesSearch.Contains(searchName))

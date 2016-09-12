@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChartForm));
 			this.butGenerate = new System.Windows.Forms.Button();
 			this.butSave = new System.Windows.Forms.Button();
 			this.cboLimitingMagnitude = new System.Windows.Forms.ComboBox();
@@ -62,17 +63,19 @@
 			this.labInfo = new System.Windows.Forms.Label();
 			this.labGenerating = new System.Windows.Forms.Label();
 			this.label16 = new System.Windows.Forms.Label();
-			this.cboInvertNS = new System.Windows.Forms.CheckBox();
+			this.chkInvertNS = new System.Windows.Forms.CheckBox();
 			this.label17 = new System.Windows.Forms.Label();
-			this.cboInvertEW = new System.Windows.Forms.CheckBox();
+			this.chkInvertEW = new System.Windows.Forms.CheckBox();
 			this.label18 = new System.Windows.Forms.Label();
-			this.cboInvertColors = new System.Windows.Forms.CheckBox();
+			this.chkInvertColors = new System.Windows.Forms.CheckBox();
+			this.label19 = new System.Windows.Forms.Label();
+			this.cboResolution = new System.Windows.Forms.ComboBox();
 			((System.ComponentModel.ISupportInitialize)(this.picChart)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// butGenerate
 			// 
-			this.butGenerate.Location = new System.Drawing.Point(69, 343);
+			this.butGenerate.Location = new System.Drawing.Point(69, 376);
 			this.butGenerate.Name = "butGenerate";
 			this.butGenerate.Size = new System.Drawing.Size(75, 23);
 			this.butGenerate.TabIndex = 1;
@@ -82,7 +85,7 @@
 			// 
 			// butSave
 			// 
-			this.butSave.Location = new System.Drawing.Point(150, 343);
+			this.butSave.Location = new System.Drawing.Point(150, 376);
 			this.butSave.Name = "butSave";
 			this.butSave.Size = new System.Drawing.Size(75, 23);
 			this.butSave.TabIndex = 2;
@@ -379,10 +382,11 @@
 			// 
 			// labInfo
 			// 
-			this.labInfo.Location = new System.Drawing.Point(6, 381);
+			this.labInfo.Location = new System.Drawing.Point(12, 412);
 			this.labInfo.Name = "labInfo";
 			this.labInfo.Size = new System.Drawing.Size(337, 303);
 			this.labInfo.TabIndex = 31;
+			this.labInfo.Click += new System.EventHandler(this.labInfo_Click);
 			// 
 			// labGenerating
 			// 
@@ -405,14 +409,14 @@
 			this.label16.TabIndex = 34;
 			this.label16.Text = "Invert N-S";
 			// 
-			// cboInvertNS
+			// chkInvertNS
 			// 
-			this.cboInvertNS.AutoSize = true;
-			this.cboInvertNS.Location = new System.Drawing.Point(114, 270);
-			this.cboInvertNS.Name = "cboInvertNS";
-			this.cboInvertNS.Size = new System.Drawing.Size(15, 14);
-			this.cboInvertNS.TabIndex = 33;
-			this.cboInvertNS.UseVisualStyleBackColor = true;
+			this.chkInvertNS.AutoSize = true;
+			this.chkInvertNS.Location = new System.Drawing.Point(114, 270);
+			this.chkInvertNS.Name = "chkInvertNS";
+			this.chkInvertNS.Size = new System.Drawing.Size(15, 14);
+			this.chkInvertNS.TabIndex = 33;
+			this.chkInvertNS.UseVisualStyleBackColor = true;
 			// 
 			// label17
 			// 
@@ -423,14 +427,14 @@
 			this.label17.TabIndex = 36;
 			this.label17.Text = "Invert E-W";
 			// 
-			// cboInvertEW
+			// chkInvertEW
 			// 
-			this.cboInvertEW.AutoSize = true;
-			this.cboInvertEW.Location = new System.Drawing.Point(114, 293);
-			this.cboInvertEW.Name = "cboInvertEW";
-			this.cboInvertEW.Size = new System.Drawing.Size(15, 14);
-			this.cboInvertEW.TabIndex = 35;
-			this.cboInvertEW.UseVisualStyleBackColor = true;
+			this.chkInvertEW.AutoSize = true;
+			this.chkInvertEW.Location = new System.Drawing.Point(114, 293);
+			this.chkInvertEW.Name = "chkInvertEW";
+			this.chkInvertEW.Size = new System.Drawing.Size(15, 14);
+			this.chkInvertEW.TabIndex = 35;
+			this.chkInvertEW.UseVisualStyleBackColor = true;
 			// 
 			// label18
 			// 
@@ -441,26 +445,52 @@
 			this.label18.TabIndex = 38;
 			this.label18.Text = "Invert Colors";
 			// 
-			// cboInvertColors
+			// chkInvertColors
 			// 
-			this.cboInvertColors.AutoSize = true;
-			this.cboInvertColors.Location = new System.Drawing.Point(114, 315);
-			this.cboInvertColors.Name = "cboInvertColors";
-			this.cboInvertColors.Size = new System.Drawing.Size(15, 14);
-			this.cboInvertColors.TabIndex = 37;
-			this.cboInvertColors.UseVisualStyleBackColor = true;
+			this.chkInvertColors.AutoSize = true;
+			this.chkInvertColors.Location = new System.Drawing.Point(114, 315);
+			this.chkInvertColors.Name = "chkInvertColors";
+			this.chkInvertColors.Size = new System.Drawing.Size(15, 14);
+			this.chkInvertColors.TabIndex = 37;
+			this.chkInvertColors.UseVisualStyleBackColor = true;
+			// 
+			// label19
+			// 
+			this.label19.AutoSize = true;
+			this.label19.Location = new System.Drawing.Point(12, 341);
+			this.label19.Name = "label19";
+			this.label19.Size = new System.Drawing.Size(57, 13);
+			this.label19.TabIndex = 39;
+			this.label19.Text = "Resolution";
+			// 
+			// cboResolution
+			// 
+			this.cboResolution.FormattingEnabled = true;
+			this.cboResolution.Items.AddRange(new object[] {
+            "1000x1000",
+            "2000x2000",
+            "4000x4000",
+            "8000x8000",
+            "12000x12000"});
+			this.cboResolution.Location = new System.Drawing.Point(114, 338);
+			this.cboResolution.Name = "cboResolution";
+			this.cboResolution.Size = new System.Drawing.Size(121, 21);
+			this.cboResolution.TabIndex = 40;
+			this.cboResolution.Text = "8000x8000";
 			// 
 			// ChartForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1048, 800);
+			this.Controls.Add(this.cboResolution);
+			this.Controls.Add(this.label19);
 			this.Controls.Add(this.label18);
-			this.Controls.Add(this.cboInvertColors);
+			this.Controls.Add(this.chkInvertColors);
 			this.Controls.Add(this.label17);
-			this.Controls.Add(this.cboInvertEW);
+			this.Controls.Add(this.chkInvertEW);
 			this.Controls.Add(this.label16);
-			this.Controls.Add(this.cboInvertNS);
+			this.Controls.Add(this.chkInvertNS);
 			this.Controls.Add(this.labGenerating);
 			this.Controls.Add(this.butSearch);
 			this.Controls.Add(this.label15);
@@ -494,6 +524,7 @@
 			this.Controls.Add(this.label8);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.labInfo);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ChartForm";
 			this.Text = "ChartForm";
 			this.Load += new System.EventHandler(this.ChartForm_Load);
@@ -539,10 +570,12 @@
 		private System.Windows.Forms.Label labInfo;
 		private System.Windows.Forms.Label labGenerating;
 		private System.Windows.Forms.Label label16;
-		private System.Windows.Forms.CheckBox cboInvertNS;
+		private System.Windows.Forms.CheckBox chkInvertNS;
 		private System.Windows.Forms.Label label17;
-		private System.Windows.Forms.CheckBox cboInvertEW;
+		private System.Windows.Forms.CheckBox chkInvertEW;
 		private System.Windows.Forms.Label label18;
-		private System.Windows.Forms.CheckBox cboInvertColors;
+		private System.Windows.Forms.CheckBox chkInvertColors;
+		private System.Windows.Forms.Label label19;
+		private System.Windows.Forms.ComboBox cboResolution;
 	}
 }

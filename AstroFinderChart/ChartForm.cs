@@ -5,8 +5,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,23 +16,65 @@ namespace AstroFinderChart
 {
 	public partial class ChartForm : Form
 	{
-		private FinderChart _finderChart = new FinderChart();
+		private FinderChart _finderChart;
         private Bitmap _chartBitmap = null;
 
 		public ChartForm()
 		{
+			Thread t = new Thread(new ThreadStart(ShowSplash));
+			t.Start();
+
 			InitializeComponent();
+			_finderChart = new FinderChart();
+			LoadValues();
+
+			t.Abort();
+		}
+
+		private void ShowSplash()
+		{
+			Application.Run(new Splash());
 		}
 
 		private void ChartForm_Load(object sender, EventArgs e)
 		{
-	        
+
+
 		}
 
 		private void Generate()
 		{
+			if (txtSearch.Text.Trim() == string.Empty)
+			{
+				string searchTerm = txtTitle.Text.Replace(" ", "").ToUpper();
+				bool found = false;
+				foreach (DeepSkyObject deepSkyObject in this._finderChart.DeepSkyCatalog.DeepSkyObjects)
+				{
+					if (deepSkyObject.AllNamesSearch.Contains(searchTerm))
+					{
+						SetDeepSkyInfo(deepSkyObject);
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+				{
+					foreach (StarLabel star in this._finderChart.StarLabels.Stars)
+					{
+						if (star.AllNamesSearch.Contains(searchTerm))
+						{
+							SetStarInfo(star);
+							found = true;
+							break;
+						}
+					}
+
+				}
+			}
 			labGenerating.Visible = true;
 			Application.DoEvents();
+			SaveValues();
 
 			string title = txtTitle.Text;
 			int limitingMagnitude = int.Parse(cboLimitingMagnitude.Text);
@@ -43,7 +87,9 @@ namespace AstroFinderChart
 			if (decD < 0)
 				decl *= -1;
 
-			this._finderChart.SetFieldView(8400, limitingMagnitude, MathExt.Deg2Rad(radius), MathExt.Deg2Rad(ra), MathExt.Deg2Rad(decl), title, chkLimitDeepsky.Checked, chkShowLabels.Checked, cboInvertColors.Checked, cboInvertNS.Checked, cboInvertEW.Checked);
+			int resolution = int.Parse(cboResolution.Text.Split(new char[] { 'x' })[0]);
+
+			this._finderChart.SetFieldView(resolution, limitingMagnitude, MathExt.Deg2Rad(radius), MathExt.Deg2Rad(ra), MathExt.Deg2Rad(decl), title, chkLimitDeepsky.Checked, chkShowLabels.Checked, chkInvertColors.Checked, chkInvertNS.Checked, chkInvertEW.Checked);
 
 			if (this._chartBitmap != null)
 			{
@@ -61,6 +107,55 @@ namespace AstroFinderChart
 
 		}
 
+		private void LoadValues()
+		{
+			if (File.Exists("settings.dat"))
+			{
+				using (BinaryReader reader = new BinaryReader(File.Open("settings.dat", FileMode.Open)))
+				{
+					txtTitle.Text = reader.ReadString();
+					txtRAH.Text = reader.ReadString();
+					txtRAM.Text = reader.ReadString();
+					txtRAS.Text = reader.ReadString();
+					txtDecD.Text = reader.ReadString();
+					txtDecM.Text = reader.ReadString();
+					txtDecS.Text = reader.ReadString();
+					cboLimitingMagnitude.Text = reader.ReadString();
+					cboRadius.Text = reader.ReadString();
+					chkInvertColors.Checked = reader.ReadBoolean();
+					chkInvertNS.Checked = reader.ReadBoolean();
+					chkInvertEW.Checked = reader.ReadBoolean();
+					chkLimitDeepsky.Checked = reader.ReadBoolean();
+					chkShowLabels.Checked = reader.ReadBoolean();
+					cboResolution.Text = reader.ReadString();
+				}
+			}
+		}
+
+		private void SaveValues()
+		{
+			using (BinaryWriter writer = new BinaryWriter(File.Open("settings.dat", FileMode.Create)))
+			{
+				writer.Write(txtTitle.Text);
+				writer.Write(txtRAH.Text);
+				writer.Write(txtRAM.Text);
+				writer.Write(txtRAS.Text);
+				writer.Write(txtDecD.Text);
+				writer.Write(txtDecM.Text);
+				writer.Write(txtDecS.Text);
+				writer.Write(cboLimitingMagnitude.Text);
+				writer.Write(cboRadius.Text);
+				writer.Write(chkInvertColors.Checked);
+				writer.Write(chkInvertNS.Checked);
+				writer.Write(chkInvertEW.Checked);
+				writer.Write(chkLimitDeepsky.Checked);
+				writer.Write(chkShowLabels.Checked);
+				writer.Write(cboResolution.Text);
+				writer.Flush();
+				writer.Close();
+			}
+
+		}
 		private void butGenerate_Click(object sender, EventArgs e)
         {
 			Generate();
@@ -266,6 +361,9 @@ namespace AstroFinderChart
 			labGenerating.Top = picChart.Top;
 		}
 
+		private void labInfo_Click(object sender, EventArgs e)
+		{
 
+		}
 	}
 }
