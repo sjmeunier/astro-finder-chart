@@ -1,3 +1,6 @@
+## Depreciated
+This repo is now deprecated and has moved to my private Git server [https://git.magna-ursa.com/sjmeunier/astro-finder-chart](https://git.magna-ursa.com/sjmeunier/astro-finder-chart).
+
 # Astro Finder Chart
 
 Ported to C# and extended by Serge Meunier
